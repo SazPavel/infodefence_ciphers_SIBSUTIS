@@ -2,10 +2,25 @@
 #include "randombytes.h"
 #include <locale.h>
 
+int sham_generate_p(int_least64_t *p)
+{
+    randombytes(p, sizeof(*p));
+    *p = fabs(*p % (int_least64_t)1e9) + 127;
+    if(*p % 2 == 0)
+        *p += 1;
+    for(;; *p += 2)
+    {
+        if(prime_test(*p))
+        {
+            break;
+        }
+    }
+    return 0;
+}
+
 int sham_generate_en(int_least64_t p, int_least64_t *ca, int_least64_t *da)
 {
     int_least64_t am[3], bm[3];
-    
     do
     {
         randombytes(ca, sizeof(*ca));
@@ -19,7 +34,6 @@ int sham_generate_en(int_least64_t p, int_least64_t *ca, int_least64_t *da)
     *da = am[2];
     return 0;
 }
-
 
 int sham_generate_de(int_least64_t p, int_least64_t *cb, int_least64_t *db)
 {
@@ -106,23 +120,16 @@ int main()
 {
     setlocale (LC_ALL, "Rus");
     int_least64_t  p, ca, da, cb, db;
-    randombytes(&p, sizeof(p));
-    p = fabs(p % (int_least64_t)1e9) + 127;
-    if(p % 2 == 0)
-        p++;
-    for(;; p += 2)
-    {
-        if(prime_test(p))
-        {
-            break;
-        }
-    }
+    sham_generate_p(&p);
     sham_generate_en(p, &ca, &da);
     sham_generate_de(p, &cb, &db);
     printf("p %"PRId64" ca %"PRId64" da %"PRId64" cb %"PRId64" db %"PRId64" \n", p,ca,da,cb,db);
-    sham_first_en(p, ca, "test", "test1");
-    sham_first_de(p, cb, "test1", "test2");
-    sham_second_en(p, da, "test2", "test1");
-    sham_second_de(p, db, "test1", "test2");
+
+    sham_first_en(p, ca, "test", "sham1");
+    sham_first_de(p, cb, "sham1", "sham2");
+    sham_second_en(p, da, "sham2", "sham1");
+    sham_second_de(p, db, "sham1", "sham_result");
+
+    execlp("rm", "", "sham1", "sham2", NULL);
     exit(0);
 }
