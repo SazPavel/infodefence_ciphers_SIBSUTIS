@@ -43,6 +43,7 @@ int rsa_generate(int_least64_t *n, int_least64_t *c, int_least64_t *d)
         bm[0] = *d; bm[1] = 0; bm[2] = 1;
         gcd_v(am, bm);
     }while(am[0] != 1);
+    
     if(am[2] < 0)
         am[2] += f;
     *c = am[2];
