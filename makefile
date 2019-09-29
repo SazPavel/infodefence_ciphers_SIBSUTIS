@@ -5,3 +5,5 @@ LDIR=./lib
 	gcc rsa.c -o rsa -Llib -linfodef -lrandombytes -lm
 33:
 	gcc l-gamal.c -o lgamal -Llib -linfodef -lrandombytes -lm
+44:
+	gcc vernam.c -o vernam -Llib -linfodef -lrandombytes -lm
