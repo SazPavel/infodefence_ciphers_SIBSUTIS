@@ -2,7 +2,7 @@
 #include "randombytes.h"
 #include <locale.h>
 
-int rsa_generate(int_least64_t *n, int_least64_t *c, int_least64_t *d)
+void rsa_generate(int_least64_t *n, int_least64_t *c, int_least64_t *d)
 {
     int_least64_t p, q, am[3], bm[3], f;
 
@@ -43,17 +43,15 @@ int rsa_generate(int_least64_t *n, int_least64_t *c, int_least64_t *d)
         bm[0] = *d; bm[1] = 0; bm[2] = 1;
         gcd_v(am, bm);
     }while(am[0] != 1);
-    
+
     if(am[2] < 0)
         am[2] += f;
     *c = am[2];
-    return 0;
 }
 
-int rsa_encryp(int_least64_t n, int_least64_t d, char *in, char *out)
+void rsa_encryp(int_least64_t n, int_least64_t d, char *in, char *out)
 {
     int_least64_t tmp;
-    int length, i;
     FILE *fin = fopen(in, "r");
     FILE *fout = fopen(out, "w");
     if(fin == NULL || fout == NULL)
@@ -66,10 +64,9 @@ int rsa_encryp(int_least64_t n, int_least64_t d, char *in, char *out)
     fclose(fout);
 }
 
-int rsa_decryp(int_least64_t n, int_least64_t c, char *in, char *out)
+void rsa_decryp(int_least64_t n, int_least64_t c, char *in, char *out)
 {
     int_least64_t tmp;
-    int length, i;
     FILE *fin = fopen(in, "r");
     FILE *fout = fopen(out, "w");
     if(fin == NULL || fout == NULL)
@@ -84,7 +81,7 @@ int rsa_decryp(int_least64_t n, int_least64_t c, char *in, char *out)
 int main()
 {
     setlocale (LC_ALL, "Rus");
-    int_least64_t  n, c, d;
+    int_least64_t n, c, d;
     rsa_generate(&n, &c, &d);
     printf("n %"PRId64" c %"PRId64" d %"PRId64" \n", n, c, d);
     

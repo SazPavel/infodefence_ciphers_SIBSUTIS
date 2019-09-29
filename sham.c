@@ -2,7 +2,7 @@
 #include "randombytes.h"
 #include <locale.h>
 
-int sham_generate_p(int_least64_t *p)
+void sham_generate_p(int_least64_t *p)
 {
     randombytes(p, sizeof(*p));
     *p = fabs(*p % (int_least64_t)1e9) + 127;
@@ -15,10 +15,9 @@ int sham_generate_p(int_least64_t *p)
             break;
         }
     }
-    return 0;
 }
 
-int sham_generate_en(int_least64_t p, int_least64_t *ca, int_least64_t *da)
+void sham_generate_en(int_least64_t p, int_least64_t *ca, int_least64_t *da)
 {
     int_least64_t am[3], bm[3];
     do
@@ -32,10 +31,9 @@ int sham_generate_en(int_least64_t p, int_least64_t *ca, int_least64_t *da)
     if(am[2] < 0)
         am[2] += (p - 1);
     *da = am[2];
-    return 0;
 }
 
-int sham_generate_de(int_least64_t p, int_least64_t *cb, int_least64_t *db)
+void sham_generate_de(int_least64_t p, int_least64_t *cb, int_least64_t *db)
 {
     int_least64_t am[3], bm[3];
     do
@@ -49,13 +47,11 @@ int sham_generate_de(int_least64_t p, int_least64_t *cb, int_least64_t *db)
     if(am[2] < 0)
         am[2] += (p - 1);
     *db = am[2];
-    return 0;
 }
 
-int sham_first_en(int_least64_t p, int_least64_t ca, char *in, char *out)
+void sham_first_en(int_least64_t p, int_least64_t ca, char *in, char *out)
 {
     int_least64_t tmp;
-    int length, i;
     FILE *fin = fopen(in, "r");
     FILE *fout = fopen(out, "w");
     if(fin == NULL || fout == NULL)
@@ -68,10 +64,9 @@ int sham_first_en(int_least64_t p, int_least64_t ca, char *in, char *out)
     fclose(fout);
 }
 
-int sham_first_de(int_least64_t p, int_least64_t cb, char *in, char *out)
+void sham_first_de(int_least64_t p, int_least64_t cb, char *in, char *out)
 {
     int_least64_t tmp;
-    int length, i;
     FILE *fin = fopen(in, "r");
     FILE *fout = fopen(out, "w");
     if(fin == NULL || fout == NULL)
@@ -84,10 +79,9 @@ int sham_first_de(int_least64_t p, int_least64_t cb, char *in, char *out)
     fclose(fout);
 }
 
-int sham_second_en(int_least64_t p, int_least64_t da, char *in, char *out)
+void sham_second_en(int_least64_t p, int_least64_t da, char *in, char *out)
 {
     int_least64_t tmp;
-    int length, i;
     FILE *fin = fopen(in, "r");
     FILE *fout = fopen(out, "w");
     if(fin == NULL || fout == NULL)
@@ -100,10 +94,9 @@ int sham_second_en(int_least64_t p, int_least64_t da, char *in, char *out)
     fclose(fout);
 }
 
-int sham_second_de(int_least64_t p, int_least64_t db, char *in, char *out)
+void sham_second_de(int_least64_t p, int_least64_t db, char *in, char *out)
 {
     int_least64_t tmp;
-    int length, i;
     FILE *fin = fopen(in, "r");
     FILE *fout = fopen(out, "w");
     if(fin == NULL || fout == NULL)

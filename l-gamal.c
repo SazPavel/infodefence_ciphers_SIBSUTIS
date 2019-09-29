@@ -2,9 +2,8 @@
 #include "randombytes.h"
 #include <locale.h>
 
-int lgamal_generate_b(int_least64_t *p, int_least64_t *g, int_least64_t *x, int_least64_t *y)
+void lgamal_generate_b(int_least64_t *p, int_least64_t *g, int_least64_t *x, int_least64_t *y)
 {
-    int i, tmp = 0;
     int_least64_t q;
     randombytes(p, sizeof(*p));
     *p = fabs(*p % (int_least64_t)1e4) + 127;
@@ -31,20 +30,17 @@ int lgamal_generate_b(int_least64_t *p, int_least64_t *g, int_least64_t *x, int_
     randombytes(x, sizeof(*x));
     *x = fabs(*x % (*p - 3)) + 2;
     *y = modpow(*g, *x, *p);
-    return 0;
 }
 
-int lgamal_generate_a(int_least64_t p, int_least64_t *k)
+void lgamal_generate_a(int_least64_t p, int_least64_t *k)
 {
     randombytes(k, sizeof(*k));
     *k = fabs(*k % (p - 3)) + 2;
-    return 0;
 }
 
-int lgamal_encryp(int_least64_t g, int_least64_t k, int_least64_t p, int_least64_t y, char *in, char *out)
+void lgamal_encryp(int_least64_t g, int_least64_t k, int_least64_t p, int_least64_t y, char *in, char *out)
 {
     int_least64_t tmp;
-    int length, i;
     FILE *fin = fopen(in, "r");
     FILE *fout = fopen(out, "w");
     if(fin == NULL || fout == NULL)
@@ -58,10 +54,9 @@ int lgamal_encryp(int_least64_t g, int_least64_t k, int_least64_t p, int_least64
     fclose(fout);
 }
 
-int lgamal_decryp(int_least64_t p, int_least64_t x, char *in, char *out)
+void lgamal_decryp(int_least64_t p, int_least64_t x, char *in, char *out)
 {
     int_least64_t a, b;
-    int length, i;
     FILE *fin = fopen(in, "r");
     FILE *fout = fopen(out, "w");
     if(fin == NULL || fout == NULL)
