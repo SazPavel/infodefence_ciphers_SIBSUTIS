@@ -9,9 +9,12 @@ char* vernam_encryp(char *in, char *out)
     char tmp, *key;
     FILE *fin = fopen(in, "r");
     FILE *fout = fopen(out, "w");
+    FILE *fkey = fopen("vernam_key", "w");
     if(fin == NULL || fout == NULL)
-        perror("no file en  ");
-        
+    {
+        perror("file encrypt");
+        exit(-1);
+    }
     fseek(fin, 0, SEEK_END);
     size = ftell(fin);
     fseek(fin, 0, SEEK_SET);
@@ -22,12 +25,13 @@ char* vernam_encryp(char *in, char *out)
         tmp = fgetc(fin);
         randombytes(&key[i], sizeof(key[i]));
         key[i] = fabs(key[i]);
+        fprintf(fkey, "%c", key[i]);
         fprintf(fout, "%d ", tmp ^ key[i]);
-        //printf("%c ", key[i]);
     }
     
     fclose(fin);
     fclose(fout);
+    fclose(fkey);
     return key;
 }
 
@@ -38,25 +42,32 @@ void vernam_decryp(char *key, char *in, char *out)
     FILE *fin = fopen(in, "r");
     FILE *fout = fopen(out, "w");
     if(fin == NULL || fout == NULL)
-        perror("no file de");
+    {
+        perror("file decrypt");
+        exit(-1);
+    }
     while(fscanf(fin, "%d",  &tmp) != EOF)
     {
         fprintf(fout, "%c", tmp ^ key[i]);
-        
-        i ++;
+        i++;
     }
     fclose(fin);
     fclose(fout);
 }
 
-int main()
+
+int main(int argc, char *argv[])
 {
     setlocale (LC_ALL, "Rus");
     char *key;
-    key = vernam_encryp("test", "vernam1");
-    vernam_decryp(key, "vernam1", "vernam_result");
+    if(argc < 2)
+    {
+        printf("Input name\n");
+        exit(0);
+    }    
+    key = vernam_encryp(argv[1], "tmp/vernam1");
+    vernam_decryp(key, "tmp/vernam1", "vernam_result");
     free(key);
-    execlp("rm", "", "vernam1", NULL);
+    //execlp("rm", "", "tmp/vernam1", NULL);
     exit(0);
 }
-

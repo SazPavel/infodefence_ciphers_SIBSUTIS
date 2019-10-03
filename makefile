@@ -1,4 +1,6 @@
 LDIR=./lib
+
+all: 11 22 33 44
 11:
 	gcc sham.c -o sham -Llib -linfodef -lrandombytes -lm
 22:
