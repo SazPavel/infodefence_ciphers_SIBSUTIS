@@ -26,5 +26,6 @@ uint_least64_t modpow(int_least64_t base, int_least64_t exponent, int_least64_t 
 void gcd_v(int_least64_t *a, int_least64_t *b);
 int comp_baby_step(const void *ptr1, const void *ptr2);
 int_least64_t shencs(int_least64_t base, int_least64_t module, int_least64_t result);
+void prime_safe_generate(int_least64_t *p, int_least64_t *g);
 
 #endif 

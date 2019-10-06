@@ -48,22 +48,88 @@ void lgamal_decryp(int_least64_t p, int_least64_t x, char *in, char *out)
     fclose(fout);
 }
 
+void lgamal_save_public_key(int_least64_t p, int_least64_t y, int_least64_t g)
+{
+    FILE *fout = fopen("tmp/lgamal_public_key", "w");
+    if(fout == NULL)
+    {
+        perror("file public key");
+        exit(-1);
+    }
+    fprintf(fout, "%"PRId64" %"PRId64" %"PRId64"\n", p, y, g);
+    fclose(fout);
+}
+
+void lgamal_save_private_key(int_least64_t p, int_least64_t x)
+{
+    FILE *fout = fopen("tmp/lgamal_private_key", "w");
+    if(fout == NULL)
+    {
+        perror("file private key");
+        exit(-1);
+    }
+    fprintf(fout, "%"PRId64" %"PRId64"\n", p, x);
+    fclose(fout);
+}
+
+void lgamal_load_public_key(int_least64_t *p, int_least64_t *y, int_least64_t *g)
+{
+    FILE *fout = fopen("tmp/lgamal_public_key", "r");
+    if(fout == NULL)
+    {
+        perror("file public key");
+        exit(-1);
+    }
+    fscanf(fout, "%"PRId64" %"PRId64" %"PRId64, p, y, g);
+    fclose(fout);
+}
+
+void lgamal_load_private_key(int_least64_t *p, int_least64_t *x)
+{
+    FILE *fout = fopen("tmp/lgamal_private_key", "r");
+    if(fout == NULL)
+    {
+        perror("file public key");
+        exit(-1);
+    }
+    fscanf(fout, "%"PRId64" %"PRId64, p, x);
+    fclose(fout);
+}
+
 int main(int argc, char *argv[])
 {
     setlocale (LC_ALL, "Rus");
     int_least64_t p, g, x, y;
-    if(argc < 2)
+    int temp;
+    if(argc < 3)
     {
-        printf("Input name\n");
+        printf("example: ./lgamal name command(1 - generate keys, 2 - encrypt, 3 - decrypt, 4 - all)\n");
         exit(0);
-    }    
-    prime_safe_generate(&p, &g);
-    lgamal_generate_xy(p, g, &x, &y);
-    FILE *fout = fopen("lgamal_key", "w");
-    fprintf(fout, "p %"PRId64"\ng %"PRId64"\nx %"PRId64"\ny %"PRId64"\n", p, g, x, y);
-    fclose(fout);
-    lgamal_encryp(g, p, y, argv[1], "tmp/lgamal1");
-    lgamal_decryp(p, x, "tmp/lgamal1", "lgamal_result");
+    }
+    sscanf(argv[2], "%d", &temp);
+    switch(temp)
+    {
+        case 1:
+            prime_safe_generate(&p, &g);
+            lgamal_generate_xy(p, g, &x, &y);
+            lgamal_save_public_key(p, y, g);
+            lgamal_save_private_key(p, x);
+            break;  
+        case 2:
+            lgamal_load_public_key(&p, &y, &g);
+            lgamal_encryp(g, p, y, argv[1], "tmp/lgamal1");
+            break;
+        case 3:
+            lgamal_load_private_key(&p, &x);
+            lgamal_decryp(p, x, "tmp/lgamal1", "lgamal_result");
+            break;
+        case 4:
+            prime_safe_generate(&p, &g);
+            lgamal_generate_xy(p, g, &x, &y);
+            lgamal_encryp(g, p, y, argv[1], "tmp/lgamal1");
+            lgamal_decryp(p, x, "tmp/lgamal1", "lgamal_result");
+            break;        
+    }
 
    // execlp("rm", "", "tmp/lgamal1", NULL);
     exit(0);

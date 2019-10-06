@@ -86,22 +86,86 @@ void rsa_decryp(int_least64_t n, int_least64_t c, char *in, char *out)
     fclose(fout);
 }
 
+void rsa_save_public_key(int_least64_t n, int_least64_t d)
+{
+    FILE *fout = fopen("tmp/rsa_public_key", "w");
+    if(fout == NULL)
+    {
+        perror("file public key");
+        exit(-1);
+    }
+    fprintf(fout, "%"PRId64" %"PRId64"\n", n, d);
+    fclose(fout);
+}
+
+void rsa_save_private_key(int_least64_t n, int_least64_t c)
+{
+    FILE *fout = fopen("tmp/rsa_private_key", "w");
+    if(fout == NULL)
+    {
+        perror("file private key");
+        exit(-1);
+    }
+    fprintf(fout, "%"PRId64" %"PRId64"\n", n, c);
+    fclose(fout);
+}
+
+void rsa_load_public_key(int_least64_t *n, int_least64_t *d)
+{
+    FILE *fout = fopen("tmp/rsa_public_key", "r");
+    if(fout == NULL)
+    {
+        perror("file public key");
+        exit(-1);
+    }
+    fscanf(fout, "%"PRId64" %"PRId64, n, d);
+    fclose(fout);
+}
+
+void rsa_load_private_key(int_least64_t *n, int_least64_t *c)
+{
+    FILE *fout = fopen("tmp/rsa_private_key", "r");
+    if(fout == NULL)
+    {
+        perror("file public key");
+        exit(-1);
+    }
+    fscanf(fout, "%"PRId64" %"PRId64, n, c);
+    fclose(fout);
+}
+
 int main(int argc, char *argv[])
 {
     setlocale (LC_ALL, "Rus");
     int_least64_t n, c, d;
-    if(argc < 2)
+    int temp;
+    if(argc < 3)
     {
-        printf("Input name\n");
+        printf("example: ./rsa name command(1 - generate keys, 2 - encrypt, 3 - decrypt, 4 - all)\n");
         exit(0);
     }
-    rsa_generate(&n, &c, &d);
-    FILE *fout = fopen("rsa_key", "w");
-    fprintf(fout, "n %"PRId64"\nc %"PRId64"\nd %"PRId64" \n", n, c, d);
-    fclose(fout);
-    
-    rsa_encryp(n, d, argv[1], "tmp/rsa1");
-    rsa_decryp(n, c, "tmp/rsa1", "rsa_result");
+    sscanf(argv[2], "%d", &temp);
+    switch(temp)
+    {
+        case 1:
+            rsa_generate(&n, &c, &d);
+            rsa_save_public_key(n, d);
+            rsa_save_private_key(n, c);
+            break;  
+        case 2:
+            rsa_load_public_key(&n, &d);
+            rsa_encryp(n, d, argv[1], "tmp/rsa1");
+            break;
+        case 3:
+            rsa_load_private_key(&n, &c);
+            rsa_decryp(n, c, "tmp/rsa1", "rsa_result");
+            break;
+        case 4:
+            rsa_generate(&n, &c, &d);
+            rsa_encryp(n, d, argv[1], "tmp/rsa1");
+            rsa_decryp(n, c, "tmp/rsa1", "rsa_result");
+            break;        
+    }
     
     //execlp("rm", "", "tmp/rsa1", NULL);
     exit(0);

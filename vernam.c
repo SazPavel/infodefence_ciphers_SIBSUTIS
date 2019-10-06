@@ -9,7 +9,7 @@ char* vernam_encryp(char *in, char *out)
     char tmp, *key;
     FILE *fin = fopen(in, "r");
     FILE *fout = fopen(out, "w");
-    FILE *fkey = fopen("vernam_key", "w");
+    FILE *fkey = fopen("tmp/vernam_key", "w");
     if(fin == NULL || fout == NULL)
     {
         perror("file encrypt");
@@ -55,19 +55,57 @@ void vernam_decryp(char *key, char *in, char *out)
     fclose(fout);
 }
 
+char* vernam_load_key()
+{
+    int_least64_t size;
+    char *key;
+    int i;
+    FILE *fout = fopen("tmp/vernam_key", "r");
+    if(fout == NULL)
+    {
+        perror("file public key");
+        exit(-1);
+    }
+    fseek(fout, 0, SEEK_END);
+    size = ftell(fout);
+    fseek(fout, 0, SEEK_SET);
+    key = malloc(size * sizeof(char));
+    for(i = 0; i < size; i++)
+    {
+        key[i] = fgetc(fout);
+    }
+    fclose(fout);
+    return key;
+}
 
 int main(int argc, char *argv[])
 {
     setlocale (LC_ALL, "Rus");
     char *key;
-    if(argc < 2)
+    int temp;
+    if(argc < 3)
     {
-        printf("Input name\n");
+        printf("example: ./vernam name command(1 - encrypt, 2 - decrypt, 3 - all)\n");
         exit(0);
-    }    
-    key = vernam_encryp(argv[1], "tmp/vernam1");
-    vernam_decryp(key, "tmp/vernam1", "vernam_result");
-    free(key);
+    }
+    sscanf(argv[2], "%d", &temp);
+    switch(temp)
+    {
+        case 1:
+            key = vernam_encryp(argv[1], "tmp/vernam1");
+            free(key);
+            break;
+        case 2:
+            key = vernam_load_key();
+            vernam_decryp(key, "tmp/vernam1", "vernam_result");
+            free(key);
+            break;
+        case 3:
+            key = vernam_encryp(argv[1], "tmp/vernam1");
+            vernam_decryp(key, "tmp/vernam1", "vernam_result");
+            free(key);
+            break;        
+    }
     //execlp("rm", "", "tmp/vernam1", NULL);
     exit(0);
 }
